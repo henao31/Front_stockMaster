@@ -224,8 +224,8 @@ const Products = () => {
           >
             <option disabled value="">Selecciona una categoría</option>
             {
-              categorias.map((categoria) => (
-                <option key={categoria.categoria_id} value={categoria.categoria_id}>
+              categorias.map((categoria, index) => (
+                <option key={index} value={categoria.categoria_id}>
                   {categoria.nombre}
                 </option>
               ))
@@ -240,8 +240,8 @@ const Products = () => {
           > 
             <option disabled value="">Selecciona un proveedor</option>
             {
-              proveedores.map((proveedor) => (
-                <option key={proveedor.proveedor_id} value={proveedor.proveedor_id}>
+              proveedores.map((proveedor, index) => (
+                <option key={index} value={proveedor.proveedor_id}>
                   {proveedor.nombre}
                 </option>
               ))
@@ -313,8 +313,8 @@ const Products = () => {
           >
             <option disabled value="">Selecciona una categoría</option>
             {
-              categorias.map((categoria) => (
-                <option key={categoria.categoria_id} value={+categoria.categoria_id}>
+              categorias.map((categoria, index) => (
+                <option key={index} value={categoria.categoria_id}>
                   {categoria.nombre}
                 </option>
               ))
@@ -329,8 +329,8 @@ const Products = () => {
           > 
             <option disabled value="">Selecciona un proveedor</option>
             {
-              proveedores.map((proveedor) => (
-                <option key={proveedor.proveedor_id} value={+proveedor.proveedor_id}>
+              proveedores.map((proveedor, index) => (
+                <option key={index} value={proveedor.proveedor_id}>
                   {proveedor.nombre}
                 </option>
               ))

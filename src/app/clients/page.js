@@ -93,11 +93,6 @@ const Clients = () => {
                     className="bg-blue-500 text-lg hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
                     <MdEdit />
                   </button>
-                  <button
-                    onClick={() => alertDelete(cliente.cliente_id, cliente.nombre)}
-                    className="bg-red-500 text-lg hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">
-                    <MdDelete />
-                  </button>
                 </td>
               </tr>
             ))}

@@ -25,7 +25,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <div className="flex flex-col w-full h-screen">
-            <div className="h-20 w-full bg-[#67e6dc] flex items-center justify-center text-5xl font-bold ">STOCK MASTER</div>
+            <div className="h-20 w-full bg-slate-100 shadow-lg   flex items-center justify-center text-5xl font-bold ">STOCK MASTER</div>
             <div className=" w-full h-[calc(100vh-80px)] flex flex-row">
               <Sidebar/>
               {children}

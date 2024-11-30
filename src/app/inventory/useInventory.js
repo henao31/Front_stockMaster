@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from 'sweetalert2'
 
-const useProducts = () => {
+const useInventory = () => {
 
   const [producto, setProducto] = useState([]);
     
@@ -310,4 +310,4 @@ const useProducts = () => {
     }
 }
 
-export default useProducts;
+export default useInventory;
