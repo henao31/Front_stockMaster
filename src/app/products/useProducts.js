@@ -175,7 +175,7 @@ const useProducts = () => {
     } 
   }
 
-  const handleDeleteProduct = async (id) => {
+  const handleDelete = async (id) => {
     try {
       const response = await fetch(`http://localhost:3001/productos/${id}`, {
         method: 'DELETE',
@@ -183,16 +183,24 @@ const useProducts = () => {
           'Content-Type': 'application/json'
         }
       });
-      if (response.ok) {  
-        setRefreshData(!refreshData);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al eliminar el producto');
+      }
+
+      if (response.ok) {
         console.log('Producto eliminado correctamente');
+        setRefreshData(!refreshData);
+        alertDelete();
       } else {
-        console.error('Error al eliminar el producto');
+        throw new Error('Error al eliminar el producto');
       }
     } catch (error) {
-      console.error('Error al eliminar el producto:', error);
+      console.error('Error al eliminar el producto:', error.message);
+      alertError('Error al eliminar el producto: ' + error.message);
     }
-  } 
+  };
 
   
   const handleEditProduct = (id) => {
@@ -216,24 +224,11 @@ const useProducts = () => {
   /* ---------- alertas----------- */
 
   // alerta de eliminación  
-  const alertDelete = (id, nombre) => {
+  const alertDelete = () => {
     Swal.fire({
-    title: "¿Estás seguro? ",
-    text: "Esta acción es irreversible. ¿Quieres continuar?",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Si, eliminar"
-    }).then((result) => {
-      if (result.isConfirmed) {
-          handleDeleteProduct(id)
-          Swal.fire({
-              title: "Eliminado!",
-              text: `El producto (${nombre}) ha sido eliminado.`,
-              icon: "success"
-          });
-      }
+      title: "Producto eliminado",
+      text: "El producto ha sido eliminado correctamente",
+      icon: "success"
     });
   }
 
@@ -256,11 +251,11 @@ const useProducts = () => {
   }
 
   // alerta de error
-  const alertError = () => {
+  const alertError = (message) => {
     Swal.fire({
       title: "Error",
-      text: "Hubo un error al actualizar el producto",
-      icon: "warning"
+      text: message,
+      icon: "error"
     });
   }
 
@@ -291,7 +286,7 @@ const useProducts = () => {
       newProduct,
       setNewProduct,
       handleUpdateProduct,
-      handleDeleteProduct,
+      handleDelete,
       handleEditProduct,
       isEditModalOpen,
       setIsEditModalOpen,

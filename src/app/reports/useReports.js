@@ -10,8 +10,8 @@ const useReports = () => {
   const [busqueda, setBusqueda] = useState('');
   const [ventasFiltradas, setVentasFiltradas] = useState(ventas);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [productos, setProductos] = useState({});
-  const [clientes, setClientes] = useState({});
+  const [productos, setProductos] = useState([]);
+  const [clientes, setClientes] = useState([]);
 
 
     useEffect(() => {
@@ -28,27 +28,70 @@ const useReports = () => {
   }, []);
 
   useEffect(() => {
-    const resultados = ventas.filter(venta =>
-      venta.fecha?.toLowerCase().includes(busqueda.toLowerCase()) 
+
+    // Crear una copia del array de ventas con las fechas formateadas
+    const ventasConFechasFormateadas = ventas.map(venta => ({
+      ...venta,
+      fecha: new Date(venta.fecha).toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      })
+    }));
+
+    const sales = ventasConFechasFormateadas.map(venta => ({
+      ...venta,
+      nombreProducto: productos.find(producto => producto.producto_id === venta.cod_producto)?.nombre.toLowerCase()
+    }));
+    
+
+    const resultados = sales.filter(venta =>
+      venta.fecha?.includes(busqueda) ||
+      venta.nombre_cliente?.toLowerCase().includes(busqueda.toLowerCase()) ||
+      venta.nombreProducto?.toLowerCase().includes(busqueda.toLowerCase())
     );
     setVentasFiltradas(resultados);
     console.log('ventasFiltradas ', resultados);
-  }, [busqueda, ventas]);
+  }, [busqueda, ventas, productos]);
 
 
   const getProducts = async () => {
-    const response = await fetch(`http://localhost:3001/productos`);
-    const data = await response.json();
-    setProductos(data);
-    console.log('productos ', data);
+    try {
+      const response = await fetch(`http://localhost:3001/productos`);
+      if (!response.ok) {
+        throw new Error('Error al obtener productos');
+      }
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setProductos(data);
+      } else {
+        console.error('Los datos de productos no son un array:', data);
+        setProductos([]);
+      }
+    } catch (error) {
+      console.error('Error al obtener productos:', error);
+      setProductos([]);
+    }
   }
 
 
   const getClients = async () => {
-    const response = await fetch(`http://localhost:3001/clientes`);
-    const data = await response.json();
-    setClientes(data);
-    console.log('clientes ', data);
+    try {
+      const response = await fetch(`http://localhost:3001/clientes`);
+      if (!response.ok) {
+        throw new Error('Error al obtener clientes');
+      }
+      const data = await response.json();
+      if (Array.isArray(data)) {
+        setClientes(data);
+      } else {
+        console.error('Los datos de clientes no son un array:', data);
+        setClientes([]);
+      }
+    } catch (error) {
+      console.error('Error al obtener clientes:', error);
+      setClientes([]);
+    }
   }
 
   const getDataInit = async () => {

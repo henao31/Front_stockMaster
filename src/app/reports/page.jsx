@@ -69,10 +69,12 @@ const Reports = () => {
                 </td>
                 <td className="py-3 px-6 text-left">{venta.total}</td>
                 <td className="py-3 px-6 text-left">
-                  {clientes.find(cliente => cliente.cliente_id === venta.cliente_id)?.nombre}
+                  {Array.isArray(clientes) && clientes.length > 0 
+                    ? clientes.find(cliente => cliente.cliente_id === venta.cliente_id)?.nombre 
+                    : 'Cargando...'}
                 </td>
                 <td className="py-3 px-6 text-center">
-                  {new Date(venta.fecha).toLocaleDateString()}
+                  {venta.fecha}
                 </td>
               </tr>
             ))}

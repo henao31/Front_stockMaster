@@ -46,6 +46,18 @@ const useSales = () => {
     getClients();
   }, []);
 
+  useEffect(() => {
+    getClients();
+  }, [stateFormClients]);
+
+  useEffect(() => {
+    console.log('cliente ', client);
+  }, [client]);
+
+  useEffect(() => {
+    console.log('clientes ', clientes);
+  }, [clientes]);
+
   const handleAddClients = async (e) => {
     e.preventDefault();
     console.log('cliente a agregar ', newClients);
@@ -63,20 +75,21 @@ const useSales = () => {
         throw new Error('Error al agregar cliente: ' + response.statusText);
       }
 
+      const result = await response.json();
+      
+      // Inicializar client si es null
+     
+      setClient({
+        cliente_id: result.id
+      });
+
       alertCreate();
       setStateFormClients(true);
-      // setRefreshData(!refreshData);
-      const result = await response.json();
-      console.log('cliente agregado ', result);
-      client.cliente_id = result.id;
-      client.nombre = result.nombre;
-      console.log('cliente ', client);
       setNewClients({ nombre: '', contacto: '', direccion: '', telefono: '', correo: '' }); 
-      // setIsModalOpen(false);
-      // setSaleActive(true);
 
       if(response.ok){
         console.log('productos actuales ', productSale);
+        console.log('cliente ', client);
       }
     } catch (error) {
       console.error('Error al agregar cliente:', error);
@@ -86,8 +99,9 @@ const useSales = () => {
 
   const handleAddSale = async (e) => {
     e.preventDefault();
+    const nombreCliente = clientes.find(cliente => cliente.cliente_id === client.cliente_id);
     console.log('producto a agregar ', client);
-    // saleClient.nombre_cliente = client.nombre;
+    saleClient.nombre_cliente = nombreCliente.nombre;
     saleClient.total = productSale.total;
     saleClient.cliente_id = client.cliente_id;
     saleClient.cod_producto = productSale.producto_id;

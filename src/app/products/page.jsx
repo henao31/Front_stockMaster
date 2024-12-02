@@ -19,7 +19,7 @@ const Products = () => {
     newProduct,
     setNewProduct,
     handleUpdateProduct,
-    handleDeleteProduct,
+    handleDelete,
     handleEditProduct,
     isEditModalOpen,
     setIsEditModalOpen,
