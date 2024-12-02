@@ -8,8 +8,13 @@ const useSales = () => {
   const [productosFiltrados, setProductosFiltrados] = useState(producto);
   const [proveedores, setProveedores] = useState([]);
   const [categorias, setCategorias] = useState([]);
+  const [saleActive, setSaleActive] = useState(true);
+  const [stateFormClients, setStateFormClients] = useState(false);
 
   const [productSale, setProductSale] = useState({});
+  const [saleClient, setSaleClient] = useState({});
+  const [client, setClient] = useState(null);
+  const [clientes, setClientes] = useState([]);
 
   // paginador
   const [paginaActual, setPaginaActual] = useState(1);
@@ -25,13 +30,110 @@ const useSales = () => {
     setPaginaActual(numeroPagina);
   };
 
+  const [newClients, setNewClients] = useState({
+    nombre: '',
+    contacto: '',
+    direccion: '',
+    telefono: '',
+    correo: ''
+  });  
+  
+  
+  useEffect(() => {
+    getDataInit();
+    getProveedores();
+    getCategorias();
+    getClients();
+  }, []);
+
+  const handleAddClients = async (e) => {
+    e.preventDefault();
+    console.log('cliente a agregar ', newClients);
+    try {
+      const response = await fetch('http://localhost:3001/clientes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newClients)
+      });
+
+      if (!response.ok) {
+        alertError();
+        throw new Error('Error al agregar cliente: ' + response.statusText);
+      }
+
+      alertCreate();
+      setStateFormClients(true);
+      // setRefreshData(!refreshData);
+      const result = await response.json();
+      console.log('cliente agregado ', result);
+      client.cliente_id = result.id;
+      client.nombre = result.nombre;
+      console.log('cliente ', client);
+      setNewClients({ nombre: '', contacto: '', direccion: '', telefono: '', correo: '' }); 
+      // setIsModalOpen(false);
+      // setSaleActive(true);
+
+      if(response.ok){
+        console.log('productos actuales ', productSale);
+      }
+    } catch (error) {
+      console.error('Error al agregar cliente:', error);
+    }
+  }; 
 
 
-    useEffect(() => {
-        getDataInit();
-        getProveedores();
-        getCategorias();
-    }, []);
+  const handleAddSale = async (e) => {
+    e.preventDefault();
+    console.log('producto a agregar ', client);
+    // saleClient.nombre_cliente = client.nombre;
+    saleClient.total = productSale.total;
+    saleClient.cliente_id = client.cliente_id;
+    saleClient.cod_producto = productSale.producto_id;
+    saleClient.cantidad = productSale.cantidad;
+    console.log('cliente a agregar ', saleClient);
+    try {
+      const response = await fetch('http://localhost:3001/ventas', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(saleClient)
+      });
+
+      if (!response.ok) {
+        alertError();
+        throw new Error('Error al agregar cliente: ' + response.statusText);
+      }
+
+      alertCreateSale();
+      setStateFormClients(false);
+      setSaleActive(true);
+      // setRefreshData(!refreshData);
+      const result = await response.json();
+      console.log('venta agregada ', result);
+
+      setProductSale({}); 
+      // setIsModalOpen(false);
+      // setSaleActive(true);
+
+      if(response.ok){
+        console.log('productos actuales ', productSale);
+      }
+    } catch (error) {
+      console.error('Error al agregar cliente:', error);
+    }
+  }; 
+
+  const getClients = async () => {
+    const response = await fetch(`http://localhost:3001/clientes`);
+    const data = await response.json();
+    setClientes(data);
+    console.log('clientes ', data);
+  }
+
+  
 
 
   useEffect(() => {
@@ -115,7 +217,8 @@ const useSales = () => {
         if (productSale.cantidad < productSale.stock) {
           setProductSale({
             ...productSale,
-            cantidad: productSale.cantidad + 1
+            cantidad: productSale.cantidad + 1,
+            total: (productSale.precio * (productSale.cantidad+1) + productSale.precio * (productSale.cantidad+1)*0.19).toFixed(2)
           });
         } else {
           alert('No hay suficiente stock para agregar más productos');
@@ -127,16 +230,32 @@ const useSales = () => {
     } else {
       // Si no hay producto en la venta, agregar el nuevo
       const product = productosActuales.find(producto => producto.producto_id === id);
+
       if (product) {
         product.categoria = categorias.find(categoria => categoria.categoria_id === product.categoria_id).nombre;
+
         setProductSale({
           ...product,
           cantidad: 1,
-          fecha_venta: fechaFormateada
+          fecha_venta: fechaFormateada,
+          total: (product.precio * 1+product.precio * 1*0.19).toFixed(2)
         });
+        console.log(productSale);
       }
     }
   };
+
+
+
+  const handleBuy = (product) => {
+    if(Object.keys(product).length > 0){
+      setSaleActive(false);
+      console.log('compra realizada ', product);
+    }else{
+      alert('No hay productos en la venta');
+    }
+
+  }
 
     
  const formatText = (text) => {
@@ -149,6 +268,25 @@ const useSales = () => {
       return text;
   };
 
+
+  const alertCreate = () => {
+    Swal.fire({
+      title: "Cliente creado",
+      text: "El cliente ha sido creado correctamente",
+      icon: "success"
+    });
+  } 
+
+  const alertCreateSale = () => {
+    Swal.fire({
+      title: "Venta creada",
+      text: "La venta ha sido creada correctamente",
+      icon: "success"
+    });
+  } 
+
+
+
     return {
       formatText,
       busqueda,
@@ -159,7 +297,15 @@ const useSales = () => {
       totalPaginas,
       handleAddProductToSale,
       productSale,
-      setProductSale
+      setProductSale,
+      saleActive,
+      handleBuy,
+      newClients,
+      setNewClients,
+      stateFormClients,
+      setStateFormClients,
+      handleAddClients,
+      handleAddSale
     }
 }
 

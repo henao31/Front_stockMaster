@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { FaUsers, FaBoxOpen } from "react-icons/fa";
 import { IoBagHandle } from "react-icons/io5";
 import { MdShoppingCart } from "react-icons/md";
-
+import { MdBarChart } from "react-icons/md";
 export const Sidebar = () => {
     const router = useRouter();
     return (
@@ -32,6 +32,12 @@ export const Sidebar = () => {
                 title="Ventas"
                 className=" h-16 w-full cursor-pointer border-b-[1px] justify-center items-center flex border-[#929dff] bg-[#7F88D5] hover:bg-[#929dff] ">
                 <MdShoppingCart className="text-4xl text-white"/>
+            </div>
+            <div 
+                onClick={() => {router.push('/reports');}}
+                title="Reportes"
+                className=" h-16 w-full cursor-pointer border-b-[1px] justify-center items-center flex border-[#929dff] bg-[#7F88D5] hover:bg-[#929dff] ">
+                <MdBarChart className="text-4xl text-white"/>
             </div>
         </div>
     );
